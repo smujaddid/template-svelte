@@ -6,7 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint:code": "eslint .",
+    "lint:style": "stylelint \"**/*.{svelte,css,scss}\" --ignore-path .gitignore",
+    "lint": "npm run lint:code && npm run lint:style",
+    "lint:code:fix": "eslint --fix  .",
+    "lint:style:fix": "stylelint --fix \"**/*.{svelte,css,scss}\" --ignore-path .gitignore",
+    "lint:fix": "npm run lint:code:fix && npm run lint:style:fix"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^2.1.4",

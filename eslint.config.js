@@ -5,7 +5,7 @@ import js from '@eslint/js'
 // @ts-expect-error missing type
 import nodePlugin from 'eslint-plugin-n'
 // @ts-expect-error missing type
-import importPlugin from 'eslint-plugin-import'
+import * as importPlugin from 'eslint-plugin-import'
 // @ts-expect-error missing type
 import promisePlugin from 'eslint-plugin-promise'
 import standard from 'eslint-config-standard'
@@ -23,30 +23,52 @@ const allExtensions = [...typeScriptExtensions, ...jsExtensions]
 /** @type { import("eslint").Linter.FlatConfig } */
 export default [
   {
-    ignores: ['public/**']
+    ignores: [
+      '**/.vscode',
+      '**/dist',
+      '**/node_modules',
+      '**/package.json',
+      '**/package-lock.json',
+      '**/public'
+    ]
   },
   {
     files: ['**/*.{js,cjs,mjs,ts,svelte}']
   },
-  js.configs.recommended,
-  nodePlugin.configs['flat/recommended'],
   {
-    plugins: {
-      promise: promisePlugin
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        ...globals.es2021,
+        ...globals.node,
+        // @ts-expect-error @types/eslint seems to be incomplete
+        document: 'readonly',
+        // @ts-expect-error @types/eslint seems to be incomplete
+        navigator: 'readonly',
+        // @ts-expect-error @types/eslint seems to be incomplete
+        window: 'readonly'
+      },
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true
+        }
+      }
     },
     rules: {
-      ...promisePlugin.configs.recommended.rules
+      ...js.configs.recommended.rules
     }
   },
   {
+    plugins: {
+      import: importPlugin
+    },
     languageOptions: {
       parserOptions: {
         ecmaVersion: 2022,
         sourceType: 'module'
       }
-    },
-    plugins: {
-      import: importPlugin
     },
     rules: {
       ...importPlugin.configs.recommended.rules,
@@ -67,6 +89,31 @@ export default [
       }
     }
   },
+  nodePlugin.configs['flat/recommended'],
+  {
+    plugins: {
+      promise: promisePlugin
+    },
+    rules: {
+      ...promisePlugin.configs.recommended.rules
+    }
+  },
+  {
+    languageOptions: {
+      parserOptions: {
+        ecmaVersion: 2022,
+        sourceType: 'module'
+      }
+    },
+    plugins: {
+      import: importPlugin,
+      n: nodePlugin,
+      promise: promisePlugin
+    },
+    rules: {
+      ...standard.rules
+    }
+  },
   {
     files: ['**/*.svelte'],
     languageOptions: {
@@ -84,37 +131,7 @@ export default [
     }
   },
   {
-    languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'module',
-      parserOptions: {
-        ecmaFeatures: { jsx: true }
-      },
-      globals: {
-        ...globals.es2021,
-        ...globals.node,
-        // @ts-expect-error @types/eslint seems to be incomplete
-        document: 'readonly',
-        // @ts-expect-error @types/eslint seems to be incomplete
-        navigator: 'readonly',
-        // @ts-expect-error @types/eslint seems to be incomplete
-        window: 'readonly'
-      }
-    },
-    rules: {
-      ...standard.rules
-    }
-  },
-  {
-    languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'module',
-      globals: {
-        ...globals.browser,
-        ...globals.es2021,
-        ...globals.node
-      }
-    },
+    // Overrides rules
     rules: {
       // allow paren-less arrow functions
       'arrow-parens': 0,

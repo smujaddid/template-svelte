@@ -10,15 +10,14 @@ import * as importPlugin from 'eslint-plugin-import'
 import promisePlugin from 'eslint-plugin-promise'
 import standard from 'eslint-config-standard'
 
-// import typescriptPlugin from '@typescript-eslint/eslint-plugin'
-// import typescriptParser from '@typescript-eslint/parser'
-
 import sveltePlugin from 'eslint-plugin-svelte'
 import svelteParser from 'svelte-eslint-parser'
 
 const jsExtensions = ['.js', '.cjs', '.mjs', '.jsx']
 const typeScriptExtensions = ['.ts', '.cts', '.mts', '.tsx']
 const allExtensions = [...typeScriptExtensions, ...jsExtensions]
+
+const nodePluginConfigFlatRecommended = nodePlugin.configs['flat/recommended']
 
 /** @type { import("eslint").Linter.FlatConfig } */
 export default [
@@ -43,6 +42,7 @@ export default [
         ...globals.browser,
         ...globals.es2021,
         ...globals.node,
+        ...nodePluginConfigFlatRecommended.languageOptions.globals,
         // @ts-expect-error @types/eslint seems to be incomplete
         document: 'readonly',
         // @ts-expect-error @types/eslint seems to be incomplete
@@ -51,28 +51,25 @@ export default [
         window: 'readonly'
       },
       parserOptions: {
+        ecmaVersion: 2022,
+        sourceType: 'module',
         ecmaFeatures: {
           jsx: true
         }
       }
     },
-    rules: {
-      ...js.configs.recommended.rules
-    }
-  },
-  {
     plugins: {
-      import: importPlugin
-    },
-    languageOptions: {
-      parserOptions: {
-        ecmaVersion: 2022,
-        sourceType: 'module'
-      }
+      import: importPlugin,
+      n: nodePlugin,
+      promise: promisePlugin
     },
     rules: {
+      ...js.configs.recommended.rules,
       ...importPlugin.configs.recommended.rules,
-      ...importPlugin.configs.typescript.rules
+      ...importPlugin.configs.typescript.rules,
+      ...nodePluginConfigFlatRecommended.rules,
+      // ...promisePlugin.configs.recommended.rules,
+      ...standard.rules
     },
     settings: {
       'import/extensions': allExtensions,
@@ -87,31 +84,6 @@ export default [
         },
         typescript: true
       }
-    }
-  },
-  nodePlugin.configs['flat/recommended'],
-  {
-    plugins: {
-      promise: promisePlugin
-    },
-    rules: {
-      ...promisePlugin.configs.recommended.rules
-    }
-  },
-  {
-    languageOptions: {
-      parserOptions: {
-        ecmaVersion: 2022,
-        sourceType: 'module'
-      }
-    },
-    plugins: {
-      import: importPlugin,
-      n: nodePlugin,
-      promise: promisePlugin
-    },
-    rules: {
-      ...standard.rules
     }
   },
   {
@@ -131,7 +103,7 @@ export default [
     }
   },
   {
-    // Overrides rules
+    // Override rules
     rules: {
       // allow paren-less arrow functions
       'arrow-parens': 0,

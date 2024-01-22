@@ -3,9 +3,9 @@ export default {
   extends: [
     'stylelint-config-html/html',
     'stylelint-config-html/svelte',
-    'stylelint-config-standard-scss'
+    'stylelint-config-standard-scss',
+    '@stylistic/stylelint-config'
   ],
-  customSyntax: 'postcss-html',
   rules: {
     'scss/at-rule-no-unknown': [
       true,
@@ -27,6 +27,7 @@ export default {
         ignoreFunctions: ['theme']
       }
     ],
-    'no-descending-specificity': null
+    'no-descending-specificity': null,
+    'selector-class-pattern': null
   }
 }

@@ -1,9 +1,9 @@
 /** @type {import('stylelint').Config} */
 export default {
   extends: [
+    'stylelint-config-standard-scss',
     'stylelint-config-html/html',
     'stylelint-config-html/svelte',
-    'stylelint-config-standard-scss',
     '@stylistic/stylelint-config'
   ],
   rules: {
